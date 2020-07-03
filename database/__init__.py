@@ -15,14 +15,15 @@
  # limitations under the License.
 ###
 
-import dataset, json, time, htmlentities
+import dataset, json, time
 import platform as platform_module
 from xml.sax.saxutils import escape
 
 def save_to_database(db_path, str_json):
   try:
-    str_json = json.loads(str_json.replace("\n", "<br />").replace("\r", "<br />"), strict=False)
-    db = dataset.connect('sqlite:///%s' % (db_path.replace("'", "_")))
+    # str_json.replace("\n", "<br />").replace("\r", "<br />")
+    str_json = json.loads(str_json, strict=False)
+    db = dataset.connect('sqlite:///%s?check_same_thread=False' % (db_path.replace("'", "_")))
     table = db['api_captures']
     os_string = platform_module.system()
     if os_string == "Windows":
@@ -36,8 +37,8 @@ def save_to_database(db_path, str_json):
       module=str_json['lib'],
       remark=''))
   except Exception as e:
-    print str(e)
-    print str_json
+    print(str(e))
+    print(str_json)
 
 def stringify(data):
   str_data = ""
@@ -53,7 +54,7 @@ def stringify(data):
 def read_from_database(db_path, index=0):
   result_set = {}
   parent_holder = []
-  db = dataset.connect('sqlite:///./app_dumps/%s.db' % (db_path))
+  db = dataset.connect('sqlite:///./app_dumps/%s.db?check_same_thread=False' % (db_path))
   api_captures = db.query('SELECT * FROM api_captures GROUP BY artifact')
   for capture in api_captures:
     child_holder = []
