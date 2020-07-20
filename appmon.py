@@ -57,7 +57,6 @@ device = ""
 session = ""
 temp_dir = tempfile.mkdtemp()
 merged_script_path = os.path.join(temp_dir, "merged.js")
-APP_LIST = []
 
 router = APIRouter()
 app = FastAPI()
@@ -123,18 +122,17 @@ def monitor_page(request: Request, app):
 
 @app.get("/",)
 def landing_page(request: Request,):
-    global APP_LIST, DB_MAP
-
+    app_list=[]
     app_dumps_dir = os.path.join(".", "app_dumps")
     for root, dirs, files in os.walk(app_dumps_dir):
         path = root.split(os.sep)
         for file in files:
             file_path = os.path.join(root, file)
             if file_path.endswith(".db"):
-                APP_LIST.append(file.replace(".db", ""))
+                app_list.append(file.replace(".db", ""))
 
     return templates.TemplateResponse(
-        "index.html", dict(request=request, apps=APP_LIST)
+        "index.html", dict(request=request, apps=app_list)
     )
 
 
